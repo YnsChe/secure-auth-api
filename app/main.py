@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 from app.models.user import User
+from app.db.database import *
 
 app = FastAPI()
 
@@ -11,7 +11,13 @@ def welcome():
 @app.post("/register/")
 async def regitser(user: User):
     print("Welcome to the registration process.")
+    add_user(user.username, user.password)
     return user
+@app.post("/delete")
+def delete(user: User):
+    print("Wlcome to deleteing users")
+    delete_user(user.username)
+    return {"deleted user": user.username}
 
 @app.get("/login")
 def login():
