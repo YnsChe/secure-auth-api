@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+
+from app.models import user
 from app.models.user import User
 from app.db.database import *
 
@@ -19,9 +21,10 @@ def delete(user: User):
     delete_user(user.username)
     return {"deleted user": user.username}
 
-@app.get("/login")
-def login():
-    return {"message": "Please Log in."}
+@app.post("/login")
+def login(user: User):
+    check_user(user.username, user.password)
+    return {"Send your credentials as a RequestBody to login."}
 
 @app.get("/users")
 def get_users():

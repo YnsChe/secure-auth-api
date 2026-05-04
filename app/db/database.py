@@ -26,3 +26,15 @@ def delete_user (usrname):
     conn2.commit()
     print("user deleted successfully")
     conn2.close()
+
+def check_user (usrname, pwd):
+    conn3 = sqlite3.connect('users.db')
+    cur3 = conn3.cursor()
+    cur3.execute("SELECT * FROM users WHERE username=? AND password=?", (usrname, pwd))
+    user = cur3.fetchone()
+    if user is None:
+        print("User not found")
+        return False
+    conn3.close()
+    print("User found")
+    return user
