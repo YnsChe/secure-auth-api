@@ -19,3 +19,6 @@ secure-auth-api/
    └── README.md
 ```
 
+# How to start
+fastapi dev
+server starts at https://127.0.0.1:8000
