@@ -34,7 +34,16 @@ def check_user (usrname, pwd):
     user = cur3.fetchone()
     if user is None:
         print("User not found")
-        return False
+        conn3.close()
+        return None
     conn3.close()
     print("User found")
     return user
+
+def get_users():
+    conn4 = sqlite3.connect('users.db')
+    cur4 = conn4.cursor()
+    cur4.execute("SELECT username FROM users")
+    users = cur4.fetchall()
+    conn4.close()
+    return users
