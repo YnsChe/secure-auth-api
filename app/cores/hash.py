@@ -1,11 +1,9 @@
 from argon2 import PasswordHasher
 
-#ph = PasswordHasher()
-#print(ph.hash("password"))
+ph = PasswordHasher()
 
 def hash_password(password):
-    #return ph.hash(password)
-    pass
-def verify_password(password, hashed):
-    #return ph.verify(hashed, password)
-    pass
+    return ph.hash(password)
+
+def verify_password(hashed, password):
+    return ph.verify(hashed, password)
