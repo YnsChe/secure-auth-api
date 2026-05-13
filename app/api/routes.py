@@ -6,9 +6,7 @@ router = APIRouter()
 
 @router.get("/")
 def welcome():
-    init()
     return {"message": "Welcome to the Webapp."}
-
 
 @router.post("/register/")
 def register(user: User):
@@ -30,7 +28,7 @@ def login(user: User):
     return {"Login Succeeded."}
 
 
-@router.get("/users/", tags=["users"])
+@router.get("/users/")
 async def users():
     print("message Welcome to the users page.")
     return get_users()
