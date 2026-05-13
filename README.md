@@ -1,5 +1,5 @@
 # secure-auth-api
-Implementing a Seucre Authentification and User Management System
+### Implementing a Seucre Authentification and User Management System
 
 
 # Structure (Layered Architecture)
@@ -7,12 +7,17 @@ Implementing a Seucre Authentification and User Management System
 secure-auth-api/
    ├── app/
    │    ├── api/     # routes, endpoints
-   │    ├── service/  # business, logic   
-   │    ├── core/    # security, config
+   │    │    └── routes.py
+   │    ├── services/  # business, logic
+   │    │    └── auth_service.py
+   │    │    └── user_management.py      
+   │    ├── cores/    # security, config
+   │    │    └── hash.py
    │    ├── db/      # database
+   │    │    └── database.py
    │    ├── models   # data structures
    │    │     └── user.py
-   │    └── main.py
+   │    └── main.py  # main App
    │    
    │
    ├── pyproject.toml (deoendencies + project config)
@@ -20,5 +25,8 @@ secure-auth-api/
 ```
 
 # How to start
+After Installing Dependencies, run the command:
+```
 fastapi dev
-server starts at https://127.0.0.1:8000
+```
+The server starts at https://127.0.0.1:8000
