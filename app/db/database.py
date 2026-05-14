@@ -1,7 +1,5 @@
 import sqlite3
 
-from app.cores.hash import hash_password, verify_password
-
 DB_PATH = "users.db"
 
 # parametrized queries
@@ -29,35 +27,35 @@ def close_db():
     return {"Connection closed"}
 
 # Register a new user
-def add_user (usrname, pwd):
-    hs_pwd = hash_password(pwd)
-    cur.execute(sql_insert, (usrname, hs_pwd))
+def add_user (username, pwd):
+    cur.execute(sql_insert, (username, pwd))
     conn.commit()
-    print(usrname, "added successfuly")
+    print(username, "added successfuly in table")
 
-def delete_user (usrname):
+def delete_user_db (usrname):
     cur.execute(sql_delete, (usrname,))
     conn.commit()
     print("user deleted successfully")
 
-def check_user (usrname, pwd):
-    cur.execute(sql_check, (usrname,))
+def search_user (username):
+    if user_found:
+        pass
+
     user, stored_pwd = cur.fetchone()
     if user is None:
-        print("User is None")
-        return None
-    vf_pwd = verify_password(stored_pwd, pwd)
-    if vf_pwd:
-        print("Pssword verified")
-    else:
-        print("False password! try again")
-        return None
-    #conn.close()
-    print(usrname, "Logged in")
-    return user
+        print("User nor found")
+        return False
+    print("User found")
+    return user, stored_pwd
 
 def get_users():
     cur.execute(sql_select)
     users = cur.fetchall()
-    #conn.close()
     return users
+
+def user_found (username):
+    cur.execute(sql_check, (username,))
+    if cur.fetchone():
+        return True
+    else:
+        return False
