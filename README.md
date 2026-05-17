@@ -62,7 +62,7 @@ secure-auth-api/
 pip install -r requirements.txt
 ```
 
-## 2. Start the development server
+## 2. Start the app
 
 ```bash
 fastapi dev app/main.py
