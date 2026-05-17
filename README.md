@@ -1,4 +1,4 @@
-# secure-auth-api
+# Secure-auth-api
 ### Implementing a Seucre Authentification and User Management System
 
 
@@ -25,8 +25,9 @@ secure-auth-api/
 ```
 
 # How to start
-After Installing Dependencies, run the command:
+After installing dependencies, run the command:
 ```
 fastapi dev
 ```
 The server starts at https://127.0.0.1:8000
+Call https://127.0.0.1:8000/docs To see the app documentation

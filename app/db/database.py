@@ -1,49 +1,67 @@
 import sqlite3
 
-conn = sqlite3.connect('users.db')
+DB_PATH = "users.db"
+
+# parametrized queries
+sql_insert = "INSERT INTO users (username, password) VALUES (?, ?)"
+sql_delete = "DELETE FROM users WHERE username=?"
+sql_select = "SELECT username FROM users"
+sql_check = "SELECT * FROM users WHERE username=?"
+sql_create = """CREATE TABLE IF NOT EXISTS users(
+                    id INTEGER PRIMARY KEY,
+                    username TEXT NOT NULL UNIQUE,
+                    password TEXT NOT NULL
+                )
+             """
+
+conn = sqlite3.connect(DB_PATH, check_same_thread=False)
 cur = conn.cursor()
-cur.execute("""
-CREATE TABLE IF NOT EXISTS users(
-    username TEXT NOT NULL,
-    password TEXT NOT NULL
-)
-""")
-print("INFO:     [+] Table created Successfuly")
-conn.close()
 
-def add_user (usrname, pwd):
-    conn1 = sqlite3.connect('users.db')
-    cur1 = conn1.cursor()
-    cur1.execute("INSERT INTO users (username, password) VALUES (?, ?)", (usrname, pwd))
-    conn1.commit()
-    print("User added successfuly")
-    conn1.close()
+# Initiate the db
+def init_db():
+    cur.execute(sql_create)
+    print("INFO:     [+] Table created Successfuly")
 
-def delete_user (usrname):
-    conn2 = sqlite3.connect('users.db')
-    cur2 = conn2.cursor()
-    cur2.execute("DELETE FROM users WHERE username=?", (usrname,))
-    conn2.commit()
+def close_db():
+    conn.close()
+    return {"Connection closed"}
+
+# Register a new user
+def add_user_db (username, pwd):
+    cur.execute(sql_check, (username,))
+    try:
+        cur.execute(sql_insert, (username, pwd))
+    except sqlite3.IntegrityError:
+        raise ValueError("User already exists")
+    conn.commit()
+    print(username, "added successfuly in table")
+
+def delete_user_db (username):
+    if not user_found(username):
+        raise ValueError("User not found")
+    cur.execute(sql_delete, (username,))
+    conn.commit()
     print("user deleted successfully")
-    conn2.close()
 
-def check_user (usrname, pwd):
-    conn3 = sqlite3.connect('users.db')
-    cur3 = conn3.cursor()
-    cur3.execute("SELECT * FROM users WHERE username=? AND password=?", (usrname, pwd))
-    user = cur3.fetchone()
-    if user is None:
+
+def search_user (username):
+    if not user_found(username):
         print("User not found")
-        conn3.close()
         return None
-    conn3.close()
+    cur.execute(sql_check, (username,))
+    user, stored_pwd = cur.fetchone()[1:3]
     print("User found")
-    return user
+    return user, stored_pwd
 
-def get_users():
-    conn4 = sqlite3.connect('users.db')
-    cur4 = conn4.cursor()
-    cur4.execute("SELECT username FROM users")
-    users = cur4.fetchall()
-    conn4.close()
+def get_users() -> list:
+    print("Entred get_users")
+    cur.execute(sql_select)
+    users = cur.fetchall()
     return users
+
+def user_found (username) -> bool:
+    cur.execute(sql_check, (username,))
+    if cur.fetchone():
+        return True
+    else:
+        return False
