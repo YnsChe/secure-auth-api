@@ -3,8 +3,8 @@ from app.db.database import add_user_db, search_user, delete_user_db, get_stored
 from app.services.auth_service import check_password
 
 
-def register_user(conn, username, pwd):
-    hashed_password = hash_password(pwd)
+def register_user(conn, username: str, password: str):
+    hashed_password = hash_password(password)
     add_user_db(conn, username, hashed_password)
 
 
@@ -23,6 +23,7 @@ def login_user(conn, username, pwd):
 def delete_user(conn, username, pwd):
     stored_pwd = get_stored_pwd(conn, username)
     if not verify_password(stored_pwd, pwd):
+def delete_user(conn, username: str, password: str):
         raise ValueError("password is incorrect.")
     print("User deleted DB")
     delete_user_db(conn, username)

@@ -29,21 +29,21 @@ def init_db():
     conn.close()
 
 # Register a new user
-def add_user_db (conn, username, pwd):
+def add_user_db (conn, username: str, password: str):
     try:
-        conn.execute(sql_insert, (username, pwd))
-    except sqlite3.IntegrityError:
-        raise ValueError("Username already exists")
+        conn.execute(sql_insert, (username, password))
+    except sqlite3.IntegrityError as e:
+        raise ValueError(str (e))
     conn.commit()
 
 def delete_user_db (conn, username):
     if not user_found(conn, username):
+def delete_user_db (conn, username: str):
         raise ValueError("Invalid Username")
     conn.execute(sql_delete, (username,))
     conn.commit()
 
-
-def search_user (conn, username):
+def check_username (conn, username: str):
     cur = conn.cursor()
     cur.execute(sql_check, (username,))
     row = cur.fetchone()
