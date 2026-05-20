@@ -36,9 +36,8 @@ def add_user_db (conn, username: str, password: str):
         raise ValueError(str (e))
     conn.commit()
 
-def delete_user_db (conn, username):
-    if not user_found(conn, username):
 def delete_user_db (conn, username: str):
+    if not check_username(conn, username):
         raise ValueError("Invalid Username")
     conn.execute(sql_delete, (username,))
     conn.commit()
@@ -49,8 +48,8 @@ def check_username (conn, username: str):
     row = cur.fetchone()
     if row is None:
         raise ValueError("Invalid Username")
-    user = row[1]
-    return user
+    found_username = row[1]
+    return found_username
 
 def get_users(conn) -> list:
     cur = conn.cursor()
@@ -59,15 +58,7 @@ def get_users(conn) -> list:
     print("User: ", users)
     return users
 
-def user_found (conn, username) -> bool:
-    cur = conn.cursor()
-    cur.execute(sql_check, (username,))
-    if cur.fetchone():
-        return True
-    else:
-        return False
-
-def get_stored_pwd(conn, username):
+def get_stored_password(conn, username):
     cur = conn.cursor()
     cur.execute(sql_check, (username,))
     row = cur.fetchone()
