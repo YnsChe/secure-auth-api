@@ -1,6 +1,8 @@
-# User Datastructure
 from pydantic import BaseModel
 
-class User(BaseModel):
+class UserInput(BaseModel):
     username: str
     password: str
+
+class UserOutput(BaseModel):
+    username: str
