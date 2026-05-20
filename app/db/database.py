@@ -14,54 +14,63 @@ sql_create = """CREATE TABLE IF NOT EXISTS users(
                 )
              """
 
-conn = sqlite3.connect(DB_PATH, check_same_thread=False)
-cur = conn.cursor()
+def get_db():
+    conn = sqlite3.connect(DB_PATH)
+    try:
+        yield conn
+    finally:
+        conn.close()
 
 # Initiate the db
 def init_db():
-    cur.execute(sql_create)
-    print("INFO:     [+] Table created Successfuly")
-
-def close_db():
+    conn = sqlite3.connect(DB_PATH)
+    conn.execute(sql_create)
+    print("INFO:     [+] Table created Successfully")
     conn.close()
-    return {"Connection closed"}
 
 # Register a new user
-def add_user_db (username, pwd):
-    cur.execute(sql_check, (username,))
+def add_user_db (conn, username, pwd):
     try:
-        cur.execute(sql_insert, (username, pwd))
+        conn.execute(sql_insert, (username, pwd))
     except sqlite3.IntegrityError:
-        raise ValueError("User already exists")
+        raise ValueError("Username already exists")
     conn.commit()
-    print(username, "added successfuly in table")
 
-def delete_user_db (username):
-    if not user_found(username):
-        raise ValueError("User not found")
-    cur.execute(sql_delete, (username,))
+def delete_user_db (conn, username):
+    if not user_found(conn, username):
+        raise ValueError("Invalid Username")
+    conn.execute(sql_delete, (username,))
     conn.commit()
-    print("user deleted successfully")
 
 
-def search_user (username):
-    if not user_found(username):
-        print("User not found")
-        return None
+def search_user (conn, username):
+    cur = conn.cursor()
     cur.execute(sql_check, (username,))
-    user, stored_pwd = cur.fetchone()[1:3]
-    print("User found")
-    return user, stored_pwd
+    row = cur.fetchone()
+    if row is None:
+        raise ValueError("Invalid Username")
+    user = row[1]
+    return user
 
-def get_users() -> list:
-    print("Entred get_users")
+def get_users(conn) -> list:
+    cur = conn.cursor()
     cur.execute(sql_select)
     users = cur.fetchall()
+    print("User: ", users)
     return users
 
-def user_found (username) -> bool:
+def user_found (conn, username) -> bool:
+    cur = conn.cursor()
     cur.execute(sql_check, (username,))
     if cur.fetchone():
         return True
     else:
         return False
+
+def get_stored_pwd(conn, username):
+    cur = conn.cursor()
+    cur.execute(sql_check, (username,))
+    row = cur.fetchone()
+    if row is None:
+        raise ValueError("Error while retrieving password")
+    return row[2]
