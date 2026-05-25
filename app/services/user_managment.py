@@ -8,16 +8,13 @@ def register_user(conn, user: UserInput) -> UserOutput:
     return UserOutput(username=user.username)
 
 def login_user(conn, user: UserInput) -> UserOutput:
-    if not check_username(conn, user.username):
-        raise ValueError("Username is incorrect.")
+    check_username(conn, user.username)
     stored_password = get_stored_password(conn, user.username)
-    if not verify_password(stored_password, user.password) :
-       raise ValueError("Incorrect password.")
+    verify_password(stored_password, user.password)
     return UserOutput(username=user.username)
 
 def delete_user(conn, user: UserInput):
-    stored_pwd = get_stored_password(conn, user.username)
-    if not verify_password(stored_pwd, user.password):
-        raise ValueError("password is incorrect.")
-    print("User deleted DB")
+    check_username(conn, user.username)
+    stored_password = get_stored_password(conn, user.username)
+    verify_password(stored_password, user.password)
     delete_user_db(conn, user.username)
