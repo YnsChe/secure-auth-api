@@ -55,7 +55,6 @@ def get_users(conn) -> list:
     cur = conn.cursor()
     cur.execute(sql_select)
     users = cur.fetchall()
-    print("User: ", users)
     return users
 
 def get_stored_password(conn, username):
