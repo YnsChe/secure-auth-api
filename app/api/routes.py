@@ -12,7 +12,6 @@ def welcome():
 @router.post("/register/")
 def register(user: UserInput, conn = Depends(get_db)):
     try:
-        UserInput.model_validate(user)
         register_user(conn, user)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -20,15 +19,24 @@ def register(user: UserInput, conn = Depends(get_db)):
 
 @router.post("/login/")
 def login(user: UserInput, conn = Depends(get_db)):
-    login_user(conn, user)
+    try:
+        login_user(conn, user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"Login Succeeded."}
 
 @router.get("/users/")
 def users(conn = Depends(get_db)) -> list:
-    print("message Welcome to the users page.")
-    return get_users(conn)
+    try:
+        users_list = get_users(conn)
+    except SystemError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return users_list
 
 @router.delete("/user/")
 def delete(user: UserInput, conn = Depends(get_db)):
-    delete_user(conn, user)
+    try:
+        delete_user(conn, user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"deleted user: " : user.username}
