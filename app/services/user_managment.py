@@ -1,27 +1,20 @@
-from app.cores.hash import hash_password
-from app.db.database import add_user_db, search_user, delete_user_db
-from app.services.auth_service import check_password, check_username
+from app.cores.hash import hash_password, verify_password
+from app.db.database import add_user_db, check_username, delete_user_db, get_stored_password
+from app.models.user import UserOutput, UserInput
 
+def register_user(conn, user: UserInput) -> UserOutput:
+    hashed_password = hash_password(user.password)
+    add_user_db(conn, user.username, hashed_password)
+    return UserOutput(username=user.username)
 
-def register_user(username, pwd):
-    hs_pwd = hash_password(pwd)
-    add_user_db(username, hs_pwd)
-    return {"Registration complete DB"}
+def login_user(conn, user: UserInput) -> UserOutput:
+    check_username(conn, user.username)
+    stored_password = get_stored_password(conn, user.username)
+    verify_password(stored_password, user.password)
+    return UserOutput(username=user.username)
 
-def get_user():
-    #TODO: implement later to check if user valid and get its data
-    pass
-
-def login_user(username, pwd):
-    user, stored_pwd = search_user(username)
-    if not check_password(stored_pwd, pwd) or check_username(username) == False:
-       raise ValueError("Username or password is incorrect.")
-    print("Login Succeeded DB")
-    return user
-
-def delete_user(username, pwd):
-    user, stored_pwd = search_user(username)
-    if not check_password(stored_pwd, pwd):
-        print("False password! try again")
-    print("User deleted DB")
-    delete_user_db(username)
+def delete_user(conn, user: UserInput):
+    check_username(conn, user.username)
+    stored_password = get_stored_password(conn, user.username)
+    verify_password(stored_password, user.password)
+    delete_user_db(conn, user.username)

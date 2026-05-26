@@ -1,13 +1,13 @@
-from app.cores.hash import verify_password
-from app.db.database import user_found
+# Put the whole authentication flow per example
 
+"""def authenticate_user(conn, username, password):
 
-def check_password(stored_pwd, pwd):
-    verified = verify_password(stored_pwd, pwd)
-    return verified
+    stored_hash = get_stored_password(conn, username)
 
-def check_username (username) -> bool:
-    if user_found(username):
-        return True
-    else:
+    if not stored_hash:
         return False
+
+    if not verify_password(stored_hash, password):
+        return False
+
+    return create_access_token(username)"""

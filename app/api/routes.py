@@ -1,6 +1,6 @@
-from fastapi import APIRouter
-from app.db.database import get_users
-from app.models.user import User
+from fastapi import APIRouter, HTTPException, Depends
+from app.db.database import get_users, get_db
+from app.models.user import UserInput, UserOutput
 from app.services.user_managment import login_user, register_user, delete_user
 
 router = APIRouter()
@@ -10,21 +10,33 @@ def welcome():
     return {"message": "Welcome to the Webapp."}
 
 @router.post("/register/")
-def register(user: User):
-    register_user(user.username, user.password)
-    return {"new user registred: ": user.username}
+def register(user: UserInput, conn = Depends(get_db)):
+    try:
+        register_user(conn, user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    return UserOutput(username=user.username)
 
 @router.post("/login/")
-def login(user: User):
-    login_user(user.username, user.password)
+def login(user: UserInput, conn = Depends(get_db)):
+    try:
+        login_user(conn, user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"Login Succeeded."}
 
 @router.get("/users/")
-def users() -> list:
-    print("message Welcome to the users page.")
-    return get_users()
+def users(conn = Depends(get_db)) -> list:
+    try:
+        users_list = get_users(conn)
+    except SystemError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    return users_list
 
 @router.delete("/user/")
-def delete(user: User):
-    delete_user(user.username, user.password)
+def delete(user: UserInput, conn = Depends(get_db)):
+    try:
+        delete_user(conn, user)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return {"deleted user: " : user.username}
