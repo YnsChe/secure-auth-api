@@ -1,6 +1,8 @@
 import sqlite3
 from sqlite3 import Connection
 
+"""Low-level database access for the `users` table (SQLite)."""
+
 DB_PATH = "users.db"
 
 # parametrized queries
@@ -16,6 +18,10 @@ sql_create = """CREATE TABLE IF NOT EXISTS users(
              """
 
 def get_db():
+    """
+        FastAPI dependency that yields a database connection.
+        Connection is closed after the request.
+        """
     conn = sqlite3.connect(DB_PATH)
     try:
         yield conn
@@ -24,12 +30,16 @@ def get_db():
 
 # Initiate the db
 def init_db():
+    """Create tables if they do not exist."""
     conn = sqlite3.connect(DB_PATH)
     conn.execute(sql_create)
     conn.close()
 
 # Register a new user
 def add_user_db (conn: Connection, username: str, password: str):
+    """
+    Insert a user. Raises ValueError if the username already exists.
+    """
     try:
         conn.execute(sql_insert, (username, password))
     except sqlite3.IntegrityError as e:
@@ -37,27 +47,40 @@ def add_user_db (conn: Connection, username: str, password: str):
     conn.commit()
 
 def delete_user_db (conn: Connection, username: str):
+    """
+    Delete a user. Raises ValueError if the user does not exist.
+    """
     if not check_username(conn, username):
-        raise ValueError("Invalid Username")
+        raise ValueError("User not found")
     conn.execute(sql_delete, (username,))
     conn.commit()
 
 def check_username (conn: Connection, username: str):
+    """
+    Return the username if it exists, otherwise raise ValueError.
+    Used for credential checks without leaking details.
+    """
     cur = conn.cursor()
     cur.execute(sql_check, (username,))
     row = cur.fetchone()
     if row is None:
-        raise ValueError("Invalid Username")
+        raise ValueError("Invalid Credentials")
+        #TODO: introduce a logger later on to log infos that we don't want to show to the user
     found_username = row[1]
     return found_username
 
 def get_users(conn: Connection) -> list:
+    """Return a list of all usernames."""
     cur = conn.cursor()
     cur.execute(sql_select)
     users = cur.fetchall()
     return users
 
 def get_stored_password(conn: Connection, username):
+    """
+    Return the stored hashed password for a username.
+    Raises ValueError if the password could not be found.
+    """
     cur = conn.cursor()
     cur.execute(sql_check, (username,))
     row = cur.fetchone()
