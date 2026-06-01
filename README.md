@@ -11,7 +11,9 @@ The project demonstrates following concepts:
 * separation of concerns
 * backend security fundamentals
 
----
+# Goal of the project
+
+The goal of the project is to build an api authentication app and make it as secure as possible while demonstrating different concepts of authentication, user management and security.
 
 # Structure (Layered Architecture)
 
