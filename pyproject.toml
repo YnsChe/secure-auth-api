@@ -1,2 +1,15 @@
+[project]
+name = "secure-auth-api"
+version = "0.1.0"
+description = "A simple FastAPI-based authentication API using SQLite and Argon2."
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "fastapi==0.136.1",
+    "uvicorn[standard]",
+    "argon2-cffi==25.1.0",
+]
+
 [tool.fastapi]
 entrypoint = "app.main:app"

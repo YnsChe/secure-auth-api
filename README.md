@@ -60,7 +60,11 @@ secure-auth-api/
 # How to Start
 
 ## 1. Install dependencies
-
+Using FastAPI CLI:
+```bash
+pip install .
+```
+Or using uvicorn:
 ```bash
 pip install -r requirements.txt
 ```
