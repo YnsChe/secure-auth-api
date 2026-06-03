@@ -86,8 +86,7 @@ http://127.0.0.1:8000/docs
 
 # Future Improvements
 
-* structured error handling
-* input validation
+* Testing
 * JWT/session authentication
 * protected routes
 * login monitoring
