@@ -2,18 +2,18 @@
 
 This project is a backend authentication system built with FastAPI.
 
-The project demonstrates following concepts:
+It demonstrates:
 
-* authentication flows
-* password hashing and verification
-* layered backend architecture
-* database integration
-* separation of concerns
+* Basic authentication flows
+* Password hashing and verification (Argon2)
+* Layered backend architecture
+* Database integration with SQLite
+* Separation of concerns
 * backend security fundamentals
 
-# Goal of the project
+## Goal of the project
 
-The goal of the project is to build an api authentication app and make it as secure as possible while demonstrating different concepts of authentication, user management and security.
+The goal is to build an API-based authentication service and make it as secure as reasonably possible while demonstrating different concepts of authentication, user management, and security.
 
 # Structure (Layered Architecture)
 
@@ -34,12 +34,13 @@ secure-auth-api/
 │   ├── db/                  # database logic
 │   │   └── database.py
 │   │
-│   ├── models/              # data models
+│   ├── models/              # pydantic data models
 │   │   └── user.py
 │   │
 │   └── main.py              # application entry point
 │
-├── pyproject.toml           # dependencies and project configuration
+├── pyproject.toml           # project configuration
+├── requirements.txt         # python dependencies  
 └── README.md
 ```
 
@@ -49,7 +50,7 @@ secure-auth-api/
 
 * User registration
 * User login
-* Get users
+* List users
 * Delete user
 * Password hashing and verification
 * SQLite database integration
@@ -65,11 +66,14 @@ pip install -r requirements.txt
 ```
 
 ## 2. Start the app
-
+Using fastapi CLI:
 ```bash
 fastapi dev app/main.py
 ```
-
+Or using uvicorn:
+```bash
+uvicorn app.main:app --reload
+```
 The server will start at:
 
 ```bash
@@ -86,8 +90,8 @@ http://127.0.0.1:8000/docs
 
 # Future Improvements
 
-* Testing
+* Automated tests
 * JWT/session authentication
 * protected routes
 * login monitoring
-* security logging
+* Security logging
