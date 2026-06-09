@@ -1,13 +1,7 @@
-# Put the whole authentication flow per example
+""" High Level Authentication, like authenticate_user(); Login()... """
 
-"""def authenticate_user(conn, username, password):
+def authenticate_user(conn, username, password):
+    pass
 
-    stored_hash = get_stored_password(conn, username)
-
-    if not stored_hash:
-        return False
-
-    if not verify_password(stored_hash, password):
-        return False
-
-    return create_access_token(username)"""
+def login_user_with_jwt():
+    pass
