@@ -7,13 +7,14 @@ from fastapi import Depends,HTTPException, status
 import jwt
 from jwt import InvalidTokenError
 
-from app.db.database import check_username
+from app.db.database import check_username, get_db
 from app.models.tokens import TokenData
 
-# Build blocks of the Token
+''' Building variables of the Token '''
+# TODO: store the variable in a .env file
 SECRET_KEY = "46b58bd07a60babe3292e8c5f8a9f7aee5b7a055413e15255f8226a97366f29e"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -27,7 +28,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def get_current_user(conn, token: Annotated[str, Depends(oauth2_scheme)]):
+def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], conn = Depends(get_db)):
     #TODO: Make a error library for all possible errors
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
