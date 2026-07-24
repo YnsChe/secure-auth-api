@@ -9,7 +9,7 @@ It demonstrates:
 * Layered backend architecture
 * Database integration with SQLite
 * Separation of concerns
-* backend security fundamentals
+* OAuth2 using JWT
 
 ## Goal of the project
 
@@ -95,7 +95,6 @@ http://127.0.0.1:8000/docs
 # Future Improvements
 
 * Automated tests
-* JWT/session authentication
 * protected routes
 * login monitoring
 * Security logging
