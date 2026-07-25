@@ -1,14 +1,10 @@
 from datetime import timedelta
 from typing import Annotated
-
 from fastapi import APIRouter, HTTPException, Depends
-
-from app.cores.authentication import create_access_token, get_current_user
+from app.cores.authentication import get_current_user
 from app.db.database import get_users, get_db
-from app.models.tokens import Token, ACCESS_TOKEN_EXPIRE_MINUTES
 from app.models.user import UserRegister, UserOutput, UserLogin
-
-from app.services.user_managment import login_user, register_user, delete_user
+from app.services.user_managment import register_user, delete_user, login_user
 
 """HTTP API routes for user registration, login, listing, and deletion."""
 router = APIRouter()
@@ -31,12 +27,10 @@ def register(user: UserRegister, conn = Depends(get_db)):
 def login(user: UserLogin, conn = Depends(get_db)):
     """Authenticate a user."""
     try:
-        userdb = login_user(conn, user)
+        login_user(conn, user)
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
-    access_token_expires = timedelta(minutes = ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": userdb.username}, expires_delta=access_token_expires)
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"Login succeded"}
 
 @router.get("/users/")
 def users(conn = Depends(get_db)) -> list:
