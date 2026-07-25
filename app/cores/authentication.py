@@ -4,18 +4,19 @@ from http.client import HTTPException
 from fastapi.security import OAuth2PasswordBearer
 from typing import Annotated
 from fastapi import Depends,HTTPException, status
-import jwt
 from jwt import InvalidTokenError
-
 from app.db.database import check_username, get_db
 from app.models.tokens import TokenData
+from dotenv import load_dotenv
+import jwt
+import os
 
-''' Building variables of the Token '''
-# TODO: store the variable in a .env file
-SECRET_KEY = "46b58bd07a60babe3292e8c5f8a9f7aee5b7a055413e15255f8226a97366f29e"
-ALGORITHM = "HS256"
+''' Load variables for the JWT'''
+load_dotenv()
+key = os.getenv("JWT_KEY")
+algorithm = os.getenv("JWT_ALG")
 
-
+''' Defining the Scheme tha we will be using ot authenticate'''
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
@@ -25,7 +26,7 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, key, algorithm=algorithm)
     return encoded_jwt
 
 def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], conn = Depends(get_db)):
@@ -36,7 +37,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], conn = Depen
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, key, algorithms=[algorithm])
         username = payload.get("sub")
         if username is None:
             raise credentials_exception
