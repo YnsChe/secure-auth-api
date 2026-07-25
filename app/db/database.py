@@ -48,10 +48,8 @@ def add_user_db (conn: Connection, username: str, password: str):
 
 def delete_user_db (conn: Connection, username: str):
     """
-    Delete a user. Raises ValueError if the user does not exist.
+    Delete a user, username gets checked in authenticate before we delet.
     """
-    if not check_username(conn, username):
-        raise ValueError("User not found")
     conn.execute(sql_delete, (username,))
     conn.commit()
 
@@ -64,8 +62,8 @@ def check_username (conn: Connection, username: str):
     cur.execute(sql_check, (username,))
     row = cur.fetchone()
     if row is None:
-        raise ValueError("Invalid Credentials")
-        #TODO: introduce a logger later on to log infos that we don't want to show to the user
+        return False
+        #TODO: introduce a logger later on to log infos that we don't want to show to the user (like invalid username)
     found_username = row[1]
     return found_username
 
@@ -85,5 +83,5 @@ def get_stored_password(conn: Connection, username):
     cur.execute(sql_check, (username,))
     row = cur.fetchone()
     if row is None:
-        raise ValueError("Error while retrieving password")
+        return False
     return row[2]
