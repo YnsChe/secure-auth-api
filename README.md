@@ -76,7 +76,7 @@ fastapi dev app/main.py
 ```
 Or using uvicorn:
 ```bash
-uvicorn app.main:app --reload
+uvicorn --reload app.main:app 
 ```
 The server will start at:
 

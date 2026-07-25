@@ -6,6 +6,7 @@ Pydantic models for user input/output.
 Login and registration are separated so that we can:
 - Enforce stricter password rules on registration,
 - Avoid hinting password rules during login.
+- Added UserInDB for getting the hashed pwd directly for the DB.
 """
 
 class UserRegister(BaseModel):
@@ -15,6 +16,11 @@ class UserRegister(BaseModel):
 class UserLogin(BaseModel):
     username: str
     password: str
+
+class UserInDB(BaseModel):
+    username: str
+    hashed_password: str
+
 
 class UserOutput(BaseModel):
     username: str

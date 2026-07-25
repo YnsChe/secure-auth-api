@@ -5,6 +5,8 @@ from argon2.exceptions import VerifyMismatchError
 # Instantiate the PasswordHasher
 ph = PasswordHasher()
 
+DUMMY_HASH = ph.hash("dummypassword")
+
 def hash_password(password: str) -> str:
     """Return an Argon2 hash for the given plaintext password."""
     return ph.hash(password)
