@@ -12,7 +12,7 @@ import jwt
 import os
 
 ''' Load variables for the JWT'''
-load_dotenv()
+load_dotenv("var.env")
 key = os.getenv("JWT_KEY")
 algorithm = os.getenv("JWT_ALG")
 

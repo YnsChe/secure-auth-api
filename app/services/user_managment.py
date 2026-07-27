@@ -17,7 +17,7 @@ def register_user(conn: Connection, user: UserRegister) -> UserOutput:
 
 def login_user(conn: Connection, user: UserLogin):
     userdb = authenticate_user(conn,user)
-    login_jwt(userdb)
+    return login_jwt(userdb)
 
 
 def delete_user(conn: Connection, user: UserLogin):

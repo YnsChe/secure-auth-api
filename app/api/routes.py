@@ -27,10 +27,10 @@ def register(user: UserRegister, conn = Depends(get_db)):
 def login(user: UserLogin, conn = Depends(get_db)):
     """Authenticate a user."""
     try:
-        login_user(conn, user)
+        token = login_user(conn, user)
     except ValueError as e:
         raise HTTPException(status_code=401, detail=str(e))
-    return {"Login succeded"}
+    return {"access_token": token, "token_type": "Bearer"}
 
 @router.get("/users/")
 def users(conn = Depends(get_db)) -> list:

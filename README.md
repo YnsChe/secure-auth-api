@@ -15,7 +15,7 @@ It demonstrates:
 
 The goal is to build an API-based authentication service and make it as secure as reasonably possible while demonstrating different concepts of authentication, user management, and security.
 
-# Structure (Layered Architecture)
+## Structure (Layered Architecture)
 
 ```bash
 secure-auth-api/
@@ -46,7 +46,7 @@ secure-auth-api/
 
 ---
 
-# Current Features
+## Current Features
 
 * User registration
 * User login
@@ -57,9 +57,9 @@ secure-auth-api/
 
 ---
 
-# How to Start
+## How to Start
 
-## 1. Install dependencies
+### 1. Install dependencies
 Using FastAPI CLI:
 ```bash
 pip install .
@@ -68,8 +68,7 @@ Or using uvicorn:
 ```bash
 pip install -r requirements.txt
 ```
-
-## 2. Start the app
+### 2. Start the app
 Using fastapi CLI:
 ```bash
 fastapi dev app/main.py
@@ -84,7 +83,46 @@ The server will start at:
 http://127.0.0.1:8000
 ```
 
-API documentation is available at:
+---
+
+## How to Test
+
+### 1. Register a user
+ - Method: POST
+ - URL: http://127.0.0.1:8000/register/
+ - Body (raw JSON):
+   ```bash
+   {
+     "username": "testuser",
+     "password": "testpassword"
+   }
+   ```
+
+### 2. Login a user
+ - Method: POST
+ - URL: http://127.0.0.1:8000/login/
+ - Body (raw JSON):
+   ```bash
+   {
+     "username": "testuser",
+     "password": "testpassword"
+   }
+   ```
+ - The responce contains:
+   ```bash
+      {
+        "access_token": "<JWT_TOKEN>",
+        "token_type": "bearer"
+      }
+   ```
+### 3. Access a protected Endpoint
+ - Login and copy the returned <JWT_Token>
+ - Mehtod: GET
+ - URL: http://127.0.0.1:8000/protected/
+ - Go to Authorization choose Bearer Token in Auth Type and past the <JWT_Token>
+ - If the Token is still valid you will get your username in responce
+ 
+For more Infos you can find the API documentation at:
 
 ```bash
 http://127.0.0.1:8000/docs
@@ -92,9 +130,10 @@ http://127.0.0.1:8000/docs
 
 ---
 
-# Future Improvements
+## Future Improvements
 
 * Automated tests
+* User freindly GUI
 * protected routes
 * login monitoring
 * Security logging
