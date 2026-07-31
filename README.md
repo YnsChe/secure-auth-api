@@ -29,12 +29,14 @@ secure-auth-api/
 │   │   └── user_management.py
 │   │
 │   ├── core/                # security and configuration
+│   │   ├── authentication.py
 │   │   └── hash.py
 │   │
 │   ├── db/                  # database logic
 │   │   └── database.py
 │   │
 │   ├── models/              # pydantic data models
+│   │   ├── tokens.py
 │   │   └── user.py
 │   │
 │   └── main.py              # application entry point
