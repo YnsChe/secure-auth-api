@@ -8,6 +8,7 @@ It demonstrates:
 * Password hashing and verification (Argon2)
 * Layered backend architecture
 * Database integration with SQLite
+* SQL raw commands
 * Separation of concerns
 * OAuth2 using JWT
 
@@ -26,18 +27,18 @@ secure-auth-api/
 │   │
 │   ├── services/            # business logic
 │   │   ├── auth_service.py
-│   │   └── user_management.py
+│   │   └── user_service.py
 │   │
 │   ├── core/                # security and configuration
 │   │   ├── authentication.py
-│   │   └── hash.py
+│   │   └── hashing.py
 │   │
 │   ├── db/                  # database logic
 │   │   └── database.py
 │   │
 │   ├── models/              # pydantic data models
 │   │   ├── tokens.py
-│   │   └── user.py
+│   │   └── users.py
 │   │
 │   └── main.py              # application entry point
 │
@@ -51,7 +52,7 @@ secure-auth-api/
 ## Current Features
 
 * User registration
-* User login
+* User login (OAuth2 + JWT)
 * List users
 * Delete user
 * Password hashing and verification
@@ -136,6 +137,5 @@ http://127.0.0.1:8000/docs
 
 * Automated tests
 * User freindly GUI
-* protected routes
 * login monitoring
 * Security logging
