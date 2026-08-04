@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, HTTPException, Depends
 from app.cores.authentication import get_current_user
 from app.db.database import get_users, get_db
-from app.models.user import UserRegister, UserOutput, UserLogin
+from app.models.users import UserRegister, UserOutput, UserLogin
 from app.services.user_service import register_user, delete_user, login_user
 
 """HTTP API routes for user registration, login, listing, and deletion."""

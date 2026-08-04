@@ -4,7 +4,7 @@ from app.cores.authentication import create_access_token
 from app.cores.hashing import verify_password, DUMMY_HASH
 from app.db.database import check_username, get_stored_password
 from app.models.tokens import ACCESS_TOKEN_EXPIRE_MINUTES
-from app.models.user import UserLogin, UserInDB
+from app.models.users import UserLogin, UserInDB
 
 
 def authenticate_user(conn, user: UserLogin) -> UserInDB:

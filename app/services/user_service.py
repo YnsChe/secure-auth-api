@@ -1,7 +1,7 @@
 from sqlite3 import Connection
 from app.cores.hashing import hash_password
 from app.db.database import add_user_db,delete_user_db
-from app.models.user import UserOutput, UserRegister, UserLogin
+from app.models.users import UserOutput, UserRegister, UserLogin
 from app.services.auth_service import authenticate_user, issue_token
 
 """Business logic for user registration, login, and deletion."""
