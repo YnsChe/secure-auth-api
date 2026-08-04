@@ -1,10 +1,9 @@
-from datetime import timedelta
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, Depends
 from app.cores.authentication import get_current_user
 from app.db.database import get_users, get_db
 from app.models.user import UserRegister, UserOutput, UserLogin
-from app.services.user_managment import register_user, delete_user, login_user
+from app.services.user_service import register_user, delete_user, login_user
 
 """HTTP API routes for user registration, login, listing, and deletion."""
 router = APIRouter()
@@ -32,8 +31,13 @@ def login(user: UserLogin, conn = Depends(get_db)):
         raise HTTPException(status_code=401, detail=str(e))
     return {"access_token": token, "token_type": "Bearer"}
 
+@router.get("/users/me")
+def read_users_me(current_user: Annotated[UserLogin, Depends(get_current_user)]):
+    """Returns logged in user"""
+    return current_user
+
 @router.get("/users/")
-def users(conn = Depends(get_db)) -> list:
+def list_users(conn = Depends(get_db)) -> list:
     """Return all users (usernames)."""
     try:
         users_list = get_users(conn)
@@ -42,7 +46,7 @@ def users(conn = Depends(get_db)) -> list:
     return users_list
 
 @router.delete("/user/")
-def delete(user: UserLogin, conn = Depends(get_db)):
+def delete_me(user: UserLogin, conn = Depends(get_db)):
     """Delete a user after credential verification."""
     try:
         delete_user(conn, user)
@@ -51,6 +55,6 @@ def delete(user: UserLogin, conn = Depends(get_db)):
     return {"deleted user: " : user.username}
 
 @router.get("/protected/")
-def protected(current_user: Annotated[str, Depends(get_current_user)]) -> str:
+def protected_endpoint(current_user: Annotated[str, Depends(get_current_user)]) -> str:
     """A protected endpoint that requires authentication."""
     return current_user
