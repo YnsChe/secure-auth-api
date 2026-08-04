@@ -6,14 +6,16 @@ from sqlite3 import Connection
 DB_PATH = "users.db"
 
 # parametrized queries
-sql_insert = "INSERT INTO users (username, password) VALUES (?, ?)"
+sql_insert = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
 sql_delete = "DELETE FROM users WHERE username=?"
 sql_select = "SELECT username FROM users"
-sql_check = "SELECT * FROM users WHERE username=?"
+sql_check_username = "SELECT * FROM users WHERE username=?"
+sql_check_empty = "SELECT COUNT(*) FROM users"
 sql_create = """CREATE TABLE IF NOT EXISTS users(
                     id INTEGER PRIMARY KEY,
                     username TEXT NOT NULL UNIQUE,
-                    password TEXT NOT NULL
+                    password TEXT NOT NULL,
+                    role TEXT NOT NULL
                 )
              """
 
@@ -37,11 +39,14 @@ def init_db():
 
 # Register a new user
 def add_user_db (conn: Connection, username: str, password: str):
-    """
-    Insert a user. Raises ValueError if the username already exists.
-    """
+    """ The first user is always the admin"""
+    cur = conn.execute(sql_check_empty)
+    (count,) = cur.fetchone()
+    role = "admin" if count == 0 else "user"
+
+    """ Insert a user. Raises ValueError if the username already exists. """
     try:
-        conn.execute(sql_insert, (username, password))
+        conn.execute(sql_insert, (username, password, role))
     except sqlite3.IntegrityError as e:
         raise ValueError(str (e))
     conn.commit()
@@ -59,7 +64,7 @@ def check_username (conn: Connection, username: str):
     Used for credential checks without leaking details.
     """
     cur = conn.cursor()
-    cur.execute(sql_check, (username,))
+    cur.execute(sql_check_username, (username,))
     row = cur.fetchone()
     if row is None:
         return False
@@ -80,7 +85,7 @@ def get_stored_password(conn: Connection, username):
     Raises ValueError if the password could not be found.
     """
     cur = conn.cursor()
-    cur.execute(sql_check, (username,))
+    cur.execute(sql_check_username, (username,))
     row = cur.fetchone()
     if row is None:
         return False
