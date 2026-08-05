@@ -63,8 +63,7 @@ def check_username (conn: Connection, username: str):
     Return the username if it exists, otherwise raise ValueError.
     Used for credential checks without leaking details.
     """
-    cur = conn.cursor()
-    cur.execute(sql_check_username, (username,))
+    cur = conn.execute(sql_check_username, (username,))
     row = cur.fetchone()
     if row is None:
         return False
@@ -74,8 +73,7 @@ def check_username (conn: Connection, username: str):
 
 def get_users(conn: Connection) -> list:
     """Return a list of all usernames."""
-    cur = conn.cursor()
-    cur.execute(sql_select)
+    cur = conn.execute(sql_select)
     users = cur.fetchall()
     return users
 
@@ -84,9 +82,13 @@ def get_stored_password(conn: Connection, username):
     Return the stored hashed password for a username.
     Raises ValueError if the password could not be found.
     """
-    cur = conn.cursor()
-    cur.execute(sql_check_username, (username,))
+    cur = conn.execute(sql_check_username, (username,))
     row = cur.fetchone()
     if row is None:
         return False
     return row[2]
+
+def get_role(conn: Connection, username):
+    cur = conn.execute(sql_check_username, (username,))
+    row = cur.fetchone()
+    return row[3]
