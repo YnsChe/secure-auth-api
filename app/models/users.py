@@ -20,6 +20,7 @@ class UserLogin(BaseModel):
 class UserInDB(BaseModel):
     username: str
     hashed_password: str
+    role: str
 
 
 class UserOutput(BaseModel):
