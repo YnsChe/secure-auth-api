@@ -1,22 +1,38 @@
 # Project Overview
 
-This project is a backend authentication system built with FastAPI.
+This project is a backend authentication system built with **FastAPI**.
 
 It demonstrates:
 
-* Basic authentication flows
-* Password hashing and verification (Argon2)
-* Layered backend architecture
-* Database integration with SQLite
-* SQL raw commands
-* Separation of concerns
-* OAuth2 using JWT
+* Basic authentication flows (register, login, protected endpoints)
+* Password hashing and verification using **Argon**
+* Layered backend architecture (API, services, core, database, models)
+* Database integration with **SQLite**
+* Raw SQL commands for user management
+* Separation of concerns and clean code structure
+* OAuth2-based authentication using **JWT** bearer tokens.
+
+---
 
 ## Goal of the project
 
 The goal is to build an API-based authentication service and make it as secure as reasonably possible while demonstrating different concepts of authentication, user management, and security.
 
-## Structure (Layered Architecture)
+---
+
+## Technology Stack
+
+- **Language:** Python
+- **Framework:** FastAPI
+- **Database:** SQLite
+- **Authentication:** OAuth2, JWT
+- **Password hashing:** Argon2
+- **Data models:** Pydantic
+- **Server:** Uvicorn (ASGI)
+
+---
+
+## Project Structure (Layered Architecture)
 
 ```bash
 secure-auth-api/
@@ -43,7 +59,7 @@ secure-auth-api/
 │   └── main.py              # application entry point
 │
 ├── pyproject.toml           # project configuration
-├── requirements.txt         # python dependencies  
+├── requirements.txt         # Python dependencies  
 └── README.md
 ```
 
@@ -53,21 +69,23 @@ secure-auth-api/
 
 * User registration
 * User login (OAuth2 + JWT)
-* List users
-* Delete user
-* Password hashing and verification
+* Role-based access control
+* List users 
+* Delete user (only admins)
+* Password hashing and verification (Argon2)
 * SQLite database integration
+* Basic protected endpoints requiring a valid JWT
 
 ---
 
 ## How to Start
 
 ### 1. Install dependencies
-Using FastAPI CLI:
+Using "pyproject.toml":
 ```bash
 pip install .
 ```
-Or using uvicorn:
+Or using "requirements.txt":
 ```bash
 pip install -r requirements.txt
 ```
@@ -78,7 +96,7 @@ fastapi dev app/main.py
 ```
 Or using uvicorn:
 ```bash
-uvicorn --reload app.main:app 
+uvicorn app.main:app --reload
 ```
 The server will start at:
 
@@ -88,12 +106,12 @@ http://127.0.0.1:8000
 
 ---
 
-## How to Test
+## API Usage
 
 ### 1. Register a user
  - Method: POST
  - URL: http://127.0.0.1:8000/register/
- - Body (raw JSON):
+ - Body (JSON):
    ```bash
    {
      "username": "testuser",
@@ -104,14 +122,14 @@ http://127.0.0.1:8000
 ### 2. Login a user
  - Method: POST
  - URL: http://127.0.0.1:8000/login/
- - Body (raw JSON):
+ - Body (JSON):
    ```bash
    {
      "username": "testuser",
      "password": "testpassword"
    }
    ```
- - The responce contains:
+ - Response:
    ```bash
       {
         "access_token": "<JWT_TOKEN>",
@@ -119,23 +137,31 @@ http://127.0.0.1:8000
       }
    ```
 ### 3. Access a protected Endpoint
- - Login and copy the returned <JWT_Token>
+ - Login and copy the returned **<JWT_Token>** from the login response.
  - Mehtod: GET
  - URL: http://127.0.0.1:8000/protected/
- - Go to Authorization choose Bearer Token in Auth Type and past the <JWT_Token>
- - If the Token is still valid you will get your username in responce
+ - Add the token as a **Bearer token** in the "Autorization" header:
+```bash
+Authorization: Bearer <JWT_TOKEN>
+```
  
-For more Infos you can find the API documentation at:
+## API Documentation
+
+FastAPI automatically provides interactive documentation via Swagger UI:
 
 ```bash
 http://127.0.0.1:8000/docs
 ```
-
+or 
+```bash
+http://127.0.0.1:8000/redoc
+```
 ---
 
 ## Future Improvements
 
-* Automated tests
-* User freindly GUI
-* login monitoring
-* Security logging
+* Automated tests (unit and integration tests using pytest)
+* User-friendly GUI (React-based frontend for registration and login)
+* Login monitoring and security logging
+* Dockerization for easier deployment
+* CI/CD pipeline for automated builds and tests
