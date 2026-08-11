@@ -71,7 +71,7 @@ def check_username (conn: Connection, username: str):
     found_username = row[1]
     return found_username
 
-def get_users(conn: Connection) -> list:
+def list_users_db(conn: Connection) -> list:
     """Return a list of all usernames."""
     cur = conn.execute(sql_select)
     users = cur.fetchall()

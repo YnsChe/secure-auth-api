@@ -1,7 +1,7 @@
 from operator import truediv
 from sqlite3 import Connection
 from app.cores.hashing import hash_password
-from app.db.database import add_user_db, delete_user_db, get_role, list_users
+from app.db.database import add_user_db, delete_user_db, get_role, list_users_db
 from app.models.users import UserOutput, UserRegister, UserLogin, UserInDB
 from app.services.auth_service import authenticate_user, issue_token
 
@@ -34,7 +34,7 @@ def list_users_service(conn: Connection, user: UserLogin):
     authenticate_user(conn, user)
     if get_role(conn, user.username) == "admin":
         try:
-            list_users(conn)
+            list_users_db(conn)
         except ValueError:
             raise ValueError("Contact an Admin to list all users")
 
