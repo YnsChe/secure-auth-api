@@ -6,11 +6,6 @@ from sqlite3 import Connection
 DB_PATH = "users.db"
 
 # parametrized queries
-sql_insert = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
-sql_delete = "DELETE FROM users WHERE username=?"
-sql_select = "SELECT username FROM users"
-sql_check_username = "SELECT * FROM users WHERE username=?"
-sql_check_empty = "SELECT COUNT(*) FROM users"
 sql_create = """CREATE TABLE IF NOT EXISTS users(
                     id INTEGER PRIMARY KEY,
                     username TEXT NOT NULL UNIQUE,
@@ -18,6 +13,13 @@ sql_create = """CREATE TABLE IF NOT EXISTS users(
                     role TEXT NOT NULL
                 )
              """
+sql_insert = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
+sql_delete = "DELETE FROM users WHERE username=?"
+sql_select = "SELECT username FROM users"
+sql_update = "UPDATE users SET role = ? WHERE username = ?"
+sql_check_username = "SELECT * FROM users WHERE username=?"
+sql_check_empty = "SELECT COUNT(*) FROM users"
+
 
 def get_db():
     """
@@ -76,6 +78,12 @@ def list_users_db(conn: Connection) -> list:
     cur = conn.execute(sql_select)
     users = cur.fetchall()
     return users
+
+def update_user_db(conn: Connection, username, role):
+    conn.execute(sql_update, (role, username))
+    conn.commit()
+    return True
+
 
 def get_stored_password(conn: Connection, username):
     """
