@@ -5,18 +5,23 @@ This project is a backend authentication system built with **FastAPI**.
 It demonstrates:
 
 * Basic authentication flows (register, login, protected endpoints)
-* Password hashing and verification using **Argon**
+* Password hashing and verification using **Argon2**
 * Layered backend architecture (API, services, core, database, models)
 * Database integration with **SQLite**
 * Raw SQL commands for user management
 * Separation of concerns and clean code structure
 * OAuth2-based authentication using **JWT** bearer tokens.
+* Role-based access control (users; admins)
 
 ---
 
 ## Goal of the project
 
-The goal is to build an API-based authentication service and make it as secure as reasonably possible while demonstrating different concepts of authentication, user management, and security.
+The goal is to build an API-based authentication service and make it as secure as reasonably possible while demonstrating:
+* Authentication and user managment
+* Role-based access control
+* Security-focused design and implementation
+* Offensive API testing and defensive monitoring (Planned)
 
 ---
 
@@ -70,8 +75,8 @@ secure-auth-api/
 * User registration
 * User login (OAuth2 + JWT)
 * Role-based access control
-* List users 
-* Delete user (only admins)
+* List users (admin only)
+* Delete user (admin only)
 * Password hashing and verification (Argon2)
 * SQLite database integration
 * Basic protected endpoints requiring a valid JWT
@@ -161,7 +166,7 @@ http://127.0.0.1:8000/redoc
 ## Future Improvements
 
 * Automated tests (unit and integration tests using pytest)
-* User-friendly GUI (React-based frontend for registration and login)
 * Login monitoring and security logging
+* Rate limiting on sensitive endpoints
 * Dockerization for easier deployment
 * CI/CD pipeline for automated builds and tests
