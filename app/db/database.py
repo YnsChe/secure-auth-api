@@ -1,9 +1,10 @@
 import sqlite3
 from sqlite3 import Connection
+from pathlib import Path
 
 """Low-level database access for the `users` table (SQLite)."""
-
-DB_PATH = "users.db"
+BASE_DIR = Path(__file__).resolve().parents[2]
+DB_PATH = BASE_DIR / "users.db"
 
 # parametrized queries
 sql_create = """CREATE TABLE IF NOT EXISTS users(
