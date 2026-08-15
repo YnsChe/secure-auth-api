@@ -4,6 +4,7 @@ from app.cores.authentication import get_current_user
 from app.db.database import get_db
 from app.models.users import UserRegister, UserOutput, UserLogin
 from app.services.user_service import register_user, delete_service, login_user, list_users_service, update_service
+from app.cores.rate_limit import LOGIN_RATE_LIMIT
 
 """HTTP API routes for user registration, login, listing, and deletion."""
 router = APIRouter()
@@ -25,7 +26,7 @@ def register(user: UserRegister, conn= Depends(get_db)):
     return UserOutput(username=user.username)
 
 
-@router.post("/login/")
+@router.post("/login/", dependencies= [Depends(LOGIN_RATE_LIMIT)])
 def login(user: UserLogin, conn= Depends(get_db)):
     """Authenticate a user."""
     try:
@@ -39,12 +40,10 @@ def login(user: UserLogin, conn= Depends(get_db)):
 @router.post("/users/")
 def list_users(user: UserLogin,conn= Depends(get_db)) -> list:
     """Return all users (usernames)."""
-    print("called /users/ route")
     try:
-        users_list = list_users_service(conn, user)
+        return list_users_service(conn, user)
     except SystemError as e:
         raise HTTPException(status_code=500, detail=str(e))
-    return users_list
 
 @router.get("/user/me")
 def read_users_me(current_user: Annotated[UserLogin, Depends(get_current_user)]):
@@ -63,7 +62,6 @@ def delete_user(user_name: str, user: UserLogin, conn= Depends(get_db)):
 @router.put("/user/{user_name}/{role}")
 def update_user_role(user_name: str, role, user: UserLogin, conn= Depends(get_db)):
     """Update an attribute of an existing user"""
-    print("[+] Entred update_user_role")
     try:
         update_service(conn, user, user_name, role)
     except ValueError as e:
