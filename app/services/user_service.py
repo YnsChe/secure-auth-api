@@ -31,11 +31,13 @@ def delete_service(conn: Connection, user: UserLogin, user_name):
 
 def list_users_service(conn: Connection, user: UserLogin):
     authenticate_user(conn, user)
-    if get_role(conn, user.username) == "admin":
-        try:
-            list_users_db(conn)
-        except ValueError:
-            raise ValueError("List cannot be displayed")
+    if get_role(conn, user.username) != "admin":
+        raise PermissionError("Only admins can list users")
+    try:
+        return list_users_db(conn)
+    except ValueError:
+        raise ValueError("List cannot be displayed")
+
 
 def update_service(conn: Connection, user: UserLogin, user_name: str, role: str):
     authenticate_user(conn, user)
@@ -44,10 +46,3 @@ def update_service(conn: Connection, user: UserLogin, user_name: str, role: str)
             update_user_db(conn, user_name, role)
         except ValueError:
             raise ValueError("User cannot be updated")
-
-
-
-"""def check_admin(user: UserInDB)-> bool:
-    if user.role == "admin":
-        return True
-    return False"""
