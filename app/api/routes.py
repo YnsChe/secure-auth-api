@@ -80,6 +80,6 @@ def update_user_role(user_name: str, role: str, current_user: Annotated[UserInDB
     """Update an attribute of an existing user"""
     try:
         update_service(conn, current_user, user_name, role)
-    except ValueError as e:
-        raise HTTPException(status_code=401, detail=str(e))
+    except PermissionError as e:
+        raise HTTPException(status_code=403, detail=str(e))
     return "Role updated successfully"
