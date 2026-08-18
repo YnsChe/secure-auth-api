@@ -1,3 +1,4 @@
+""" Defining different rate limiting types for routes"""
 from pyrate_limiter import Duration, Limiter, Rate
 from fastapi_limiter.depends import RateLimiter
 
