@@ -24,7 +24,7 @@ def register(user: UserRegister, conn=Depends(get_db)):
     try:
         register_user(conn, user)
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=409, detail=str(e))
     return UserOutput(username=user.username)
 
 
