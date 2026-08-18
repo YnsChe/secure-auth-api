@@ -72,8 +72,11 @@ def add_user_db(conn: Connection, username: str, hashed_password: str) -> None:
 
 
 def delete_user_db(conn: Connection, username: str) -> None:
-    """    Delete a user, username gets checked in authenticate before we delet.    """
-    conn.execute(sql_delete_user, (username,))
+    """    Delete a user from the database    """
+    cursor = conn.execute(sql_delete_user, (username,))
+    if cursor.rowcount == 0:
+        conn.rollback()
+        raise ValueError("User not found")
     conn.commit()
 
 
@@ -93,6 +96,7 @@ def list_users_db(conn: Connection) -> list[str]:
 
 
 def update_user_db(conn: Connection, username: str, role:str) -> None:
+    """Updates (until now) the role of a user in db"""
     conn.execute(sql_update_user_role, (role, username))
     conn.commit()
 
