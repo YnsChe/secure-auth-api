@@ -1,29 +1,23 @@
-# Project Overview
+## Project Overview
 
-This project is a backend authentication system built with **FastAPI**.
+The project is being developed in three main stages:
+1. **Build**: Build and test the authentication system and establish a solid baseline.
 
-It demonstrates:
+2. **Offensive Security**: Use the API as a security lab and try to find weaknesses in areas such as authentication, authorization, input validation, JWT handling, rate limiting, and business logic.
 
-* Basic authentication flows (register, login, protected endpoints)
-* Password hashing and verification using **Argon2**
-* Layered backend architecture (API, services, core, database, models)
-* Database integration with **SQLite**
-* Raw SQL commands for user management
-* Separation of concerns and clean code structure
-* OAuth2-based authentication using **JWT** bearer tokens.
-* Role-based access control (users; admins)
+3. **Defensive Security**: Analyze the vulnerabilities found during testing, implement appropriate fixes, and add tests to make sure the vulnerabilities cannot easily return.
 
----
+The idea is to go through the cycle of: Build → Attack → Fix → Retest
 
-## Goal of the project
+## Project Goals
 
-The goal is to build an API-based authentication service and make it as secure as reasonably possible while demonstrating:
-* Authentication and user managment
-* Role-based access control
-* Security-focused design and implementation
-* Offensive API testing and defensive monitoring (Planned)
+The main goals of this project are to:
+- Build a clean authentication API with FastAPI
+- Learn and apply common authentication and authorization concepts
+- Practice offensice security skills
+- Learn to identify, exploit and fix vulnerabilities
 
----
+*The project is intended as a learning project and is not designed as a production authentication service.*
 
 ## Technology Stack
 
@@ -34,12 +28,11 @@ The goal is to build an API-based authentication service and make it as secure a
 - **Password hashing:** Argon2
 - **Data models:** Pydantic
 - **Server:** Uvicorn (ASGI)
+- **Testing:** Pytest
 
----
+## Project Structure
 
-## Project Structure (Layered Architecture)
-
-```bash
+```text
 secure-auth-api/
 │
 ├── app/
@@ -63,30 +56,32 @@ secure-auth-api/
 │   │
 │   └── main.py              # application entry point
 │
+├── tests/
 ├── pyproject.toml           # project configuration
 ├── requirements.txt         # Python dependencies  
 └── README.md
 ```
+The application uses a layered structure to keep API routes, business logic, security logic and database access seperated.
 
----
 
 ## Current Features
 
-* User registration
-* User login (OAuth2 + JWT)
+* User registration and login
+* Password hashing with Argon2
+* JWT authentication
+* OAuth2 password flow
+* Protected endpoints
 * Role-based access control
 * List users (admin only)
 * Delete user (admin only)
-* Password hashing and verification (Argon2)
-* SQLite database integration
-* Basic protected endpoints requiring a valid JWT
+* SQLite database
+* Input validation with Pydantic
+* Login rate limiting
+* Basic automated tests
 
----
+## Running the project
 
-## How to Start
-
-### 1. Install dependencies
-Using "pyproject.toml":
+Install dependencies
 ```bash
 pip install .
 ```
@@ -94,79 +89,60 @@ Or using "requirements.txt":
 ```bash
 pip install -r requirements.txt
 ```
-### 2. Start the app
-Using fastapi CLI:
+Start the development server:
 ```bash
 fastapi dev app/main.py
 ```
-Or using uvicorn:
-```bash
-uvicorn app.main:app --reload
-```
-The server will start at:
-
+The API will be available at:
 ```bash
 http://127.0.0.1:8000
 ```
 
----
-
-## API Usage
-
-### 1. Register a user
- - Method: POST
- - URL: http://127.0.0.1:8000/register/
- - Body (JSON):
-   ```bash
-   {
-     "username": "testuser",
-     "password": "testpassword"
-   }
-   ```
-
-### 2. Login a user
- - Method: POST
- - URL: http://127.0.0.1:8000/login/
- - Body (JSON):
-   ```bash
-   {
-     "username": "testuser",
-     "password": "testpassword"
-   }
-   ```
- - Response:
-   ```bash
-      {
-        "access_token": "<JWT_TOKEN>",
-        "token_type": "bearer"
-      }
-   ```
-### 3. Access a protected Endpoint
- - Login and copy the returned **<JWT_Token>** from the login response.
- - Mehtod: GET
- - URL: http://127.0.0.1:8000/protected/
- - Add the token as a **Bearer token** in the "Autorization" header:
-```bash
-Authorization: Bearer <JWT_TOKEN>
-```
- 
 ## API Documentation
 
-FastAPI automatically provides interactive documentation via Swagger UI:
-
+FastAPI provides interactive API documentation at: 
 ```bash
 http://127.0.0.1:8000/docs
 ```
-or 
+ReDoc available at: 
 ```bash
 http://127.0.0.1:8000/redoc
 ```
----
 
-## Future Improvements
+## Example Usage
+Register
+```http
+POST /register/
+Content-Type: application/json
+{
+"username": "testuser"
+"password": "testpassword"
+}
+```
+Login
+```http
+POST /login/
+Content-Type: application/json
+{
+"username": "testuser"
+"password": "testpassword"
+}
+```
+The response contains a JWT access token
+```json
+{
+"access_token": "<JWT_TOKEN>"
+"token_type": "bearer"
+}
+```
+Use this token to access protected endpoints. For example:
+```http
+GET /user/me
+Authorization: Bearer <JWT_TOKEN>
+```
 
-* Automated tests (unit and integration tests using pytest)
-* Login monitoring and security logging
-* Rate limiting on sensitive endpoints
-* Dockerization for easier deployment
-* CI/CD pipeline for automated builds and tests
+## Testing
+Run the tests with: 
+```bash
+pytest
+```
