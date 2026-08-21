@@ -6,3 +6,5 @@ pydantic_core==2.46.4
 PyJWT==2.13.0
 SQLAlchemy==2.0.45
 python-dotenv==1.2.2
+pyrate-limiter==4.4.0
+redis==8.1.0

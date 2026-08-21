@@ -1,102 +1,118 @@
 import sqlite3
+from pathlib import Path
 from sqlite3 import Connection
 
-"""Low-level database access for the `users` table (SQLite)."""
+from app.models.users import UserInDB
 
-DB_PATH = "users.db"
+#Low-level database access for the `users` table (SQLite).
+BASE_DIR = Path(__file__).resolve().parents[2]
+DB_PATH = BASE_DIR / "users.db"
 
 # parametrized queries
-sql_create = """CREATE TABLE IF NOT EXISTS users(
-                    id INTEGER PRIMARY KEY,
+sql_create_users_table = """CREATE TABLE IF NOT EXISTS users
+                (
+                    id       INTEGER PRIMARY KEY,
                     username TEXT NOT NULL UNIQUE,
-                    password TEXT NOT NULL,
-                    role TEXT NOT NULL
+                    hashed_password TEXT NOT NULL,
+                    role     TEXT NOT NULL
                 )
              """
-sql_insert = "INSERT INTO users (username, password, role) VALUES (?, ?, ?)"
-sql_delete = "DELETE FROM users WHERE username=?"
-sql_select = "SELECT username FROM users"
-sql_update = "UPDATE users SET role = ? WHERE username = ?"
-sql_check_username = "SELECT * FROM users WHERE username=?"
+sql_insert_user = "INSERT INTO users (username, hashed_password, role) VALUES (?, ?, ?)"
+sql_delete_user = "DELETE FROM users WHERE username=?"
+sql_get_usernames = "SELECT username FROM users"
+sql_update_user_role = "UPDATE users SET role = ? WHERE username = ?"
+sql_get_user_by_username = "SELECT username, hashed_password, role FROM users WHERE username=?"
 sql_check_empty = "SELECT COUNT(*) FROM users"
 
 
 def get_db():
     """
-        FastAPI dependency that yields a database connection.
-        Connection is closed after the request.
-        """
+    FastAPI dependency that yields a database connection.
+    Connection is closed after the request.
+    """
     conn = sqlite3.connect(DB_PATH)
+    conn.row_factory = sqlite3.Row
+
     try:
         yield conn
     finally:
         conn.close()
 
+
 # Initiate the db
 def init_db():
     """Create tables if they do not exist."""
     conn = sqlite3.connect(DB_PATH)
-    conn.execute(sql_create)
-    conn.close()
+    try:
+        conn.execute(sql_create_users_table)
+        conn.commit()
+    finally:
+        conn.close()
 
-# Register a new user
-def add_user_db (conn: Connection, username: str, password: str):
-    """ The first user is always the admin"""
-    cur = conn.execute(sql_check_empty)
-    (count,) = cur.fetchone()
+
+def add_user_db(conn: Connection, username: str, hashed_password: str) -> None:
+    """
+       Insert a new user.
+
+       The first user is assigned the admin role.
+       All subsequent users are assigned the user role.
+
+       Raises:
+           ValueError: If the username already exists.
+       """
+    (count,) = conn.execute(sql_check_empty).fetchone()
     role = "admin" if count == 0 else "user"
 
-    """ Insert a user. Raises ValueError if the username already exists. """
     try:
-        conn.execute(sql_insert, (username, password, role))
-    except sqlite3.IntegrityError as e:
-        raise ValueError(str (e))
+        conn.execute(sql_insert_user, (username, hashed_password, role))
+    except sqlite3.IntegrityError:
+        conn.rollback()
+        raise ValueError("Username already exists")
     conn.commit()
 
-def delete_user_db (conn: Connection, username: str):
-    """
-    Delete a user, username gets checked in authenticate before we delet.
-    """
-    conn.execute(sql_delete, (username,))
+
+def delete_user_db(conn: Connection, username: str) -> None:
+    """    Delete a user from the database    """
+    cursor = conn.execute(sql_delete_user, (username,))
+    if cursor.rowcount == 0:
+        conn.rollback()
+        raise ValueError("User not found")
     conn.commit()
 
-def check_username (conn: Connection, username: str):
-    """
-    Return the username if it exists, otherwise raise ValueError.
-    Used for credential checks without leaking details.
-    """
-    cur = conn.execute(sql_check_username, (username,))
-    row = cur.fetchone()
+
+def get_user_by_username(conn: Connection, username: str) -> UserInDB | None:
+    """    Return the user as UserInDB form if it exists, otherwise None.    """
+    row = conn.execute(sql_get_user_by_username, (username,)).fetchone()
     if row is None:
-        return False
-        #TODO: introduce a logger later on to log infos that we don't want to show to the user (like invalid username)
-    found_username = row[1]
-    return found_username
+        return None
+        # TODO: introduce a logger later on to log infos that we don't want to show to the user (like invalid username)
+    return UserInDB(username=row["username"], hashed_password=row["hashed_password"], role=row["role"])
 
-def list_users_db(conn: Connection) -> list:
+
+def list_users_db(conn: Connection) -> list[str]:
     """Return a list of all usernames."""
-    cur = conn.execute(sql_select)
-    users = cur.fetchall()
-    return users
+    rows = conn.execute(sql_get_usernames).fetchall()
+    return [row["username"] for row in rows]
 
-def update_user_db(conn: Connection, username, role):
-    conn.execute(sql_update, (role, username))
+
+def update_user_db(conn: Connection, username: str, role:str) -> None:
+    """Updates (until now) the role of a user in db"""
+    conn.execute(sql_update_user_role, (role, username))
     conn.commit()
-    return True
 
 
-def get_stored_password(conn: Connection, username):
-    """
-    Return the stored hashed password for a username.
-    Raises ValueError if the password could not be found.
-    """
-    cur = conn.execute(sql_check_username, (username,))
-    row = cur.fetchone()
+# I don't need to get hashed password and row since in get_user_by_username extractz all the field i just need to chose one.
+def get_stored_password(conn: Connection, username: str) -> str | None:
+    """Return user's hashed password or none."""
+    row = conn.execute(sql_get_user_by_username, (username,)).fetchone()
     if row is None:
-        return False
-    return row[2]
+        return None
+    return row["hashed_password"]
 
-def get_role(conn: Connection, username):
-    cur = conn.execute(sql_check_username, (username,))
-    row = cur.fetchone()
-    return row[3]
+
+def get_role(conn: Connection, username: str) -> str | None:
+    """Return the user's role, or None if the user doesn't exist."""
+    row = conn.execute(sql_get_user_by_username, (username,)).fetchone()
+    if row is None:
+        return None
+    return row["role"]

@@ -1,7 +1,8 @@
+"""Password hashing and verification using Argon2."""
 from argon2 import PasswordHasher
 from argon2.exceptions import VerifyMismatchError
 
-"""Password hashing and verification using Argon2."""
+
 # Instantiate the PasswordHasher
 ph = PasswordHasher()
 
