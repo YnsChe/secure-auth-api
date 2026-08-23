@@ -4,9 +4,7 @@ from sqlite3 import Connection
 
 from app.models.users import UserInDB
 
-#Low-level database access for the `users` table (SQLite).
-BASE_DIR = Path(__file__).resolve().parents[2]
-DB_PATH = BASE_DIR / "users.db"
+DB_PATH = "users.db"
 
 # parametrized queries
 sql_create_users_table = """CREATE TABLE IF NOT EXISTS users
