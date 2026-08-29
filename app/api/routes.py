@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.cores.authentication import get_current_user
-from app.cores.rate_limit import LOGIN_RATE_LIMIT
+from app.cores.rate_limit import LOGIN_RATE_LIMIT, login_limit
 from app.db.database import get_db
 from app.models.users import UserRegister, UserOutput, UserLogin, UserInDB
 from app.services.user_service import register_user, delete_service, login_user, list_users_service, update_service
@@ -25,10 +25,10 @@ def register(user: UserRegister, conn=Depends(get_db)):
         register_user(conn, user)
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
-    return UserOutput(username=user.username)
+    # remove duplicated Useroutput return
 
 
-@router.post("/login/", dependencies=[Depends(LOGIN_RATE_LIMIT)])
+@router.post("/login/", dependencies=[Depends(login_limit)])
 def login(user: UserLogin, conn=Depends(get_db)):
     """login a user."""
     try:
@@ -38,7 +38,7 @@ def login(user: UserLogin, conn=Depends(get_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.post("/token", dependencies=[Depends(LOGIN_RATE_LIMIT)])
+@router.post("/token", dependencies=[Depends(login_limit)])
 def oauth2_login(form_data: OAuth2PasswordRequestForm = Depends(), conn=Depends(get_db)):
     """Login using OAuth2 Form"""
     user = UserLogin(username=form_data.username, password=form_data.password)
@@ -71,7 +71,7 @@ def delete_user(user_name: str, current_user: Annotated[UserInDB, Depends(get_cu
         delete_service(conn, current_user, user_name)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
-    return {"deleted user: ": user_name}
+    return {"detail": f"Deleted user {user_name}"}
 
 
 @router.put("/user/{user_name}/{role}")
@@ -82,4 +82,4 @@ def update_user_role(user_name: str, role: str, current_user: Annotated[UserInDB
         update_service(conn, current_user, user_name, role)
     except PermissionError as e:
         raise HTTPException(status_code=403, detail=str(e))
-    return "Role updated successfully"
+    return {"detail": "Role updated successfully"}
