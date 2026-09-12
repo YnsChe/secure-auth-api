@@ -44,6 +44,13 @@ class RateLimiter:
             entry["count"] = 1
             return True
 
+    def reset(self, key: str | None = None) -> None:
+        with self.lock:
+            if key is None:
+                self.requests.clear()
+            else:
+                self.requests.pop(key, None)
+
     async def __call__(self, request: Request):
         client_ip = request.client.host
         if not self.is_allowed(client_ip):
