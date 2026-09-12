@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.cores.authentication import get_current_user
-from app.cores.rate_limit import LOGIN_RATE_LIMIT, login_limit
+from app.cores.rate_limit import login_limit
 from app.db.database import get_db
 from app.models.users import UserRegister, UserOutput, UserLogin, UserInDB
 from app.services.user_service import register_user, delete_service, login_user, list_users_service, update_service
@@ -22,10 +22,10 @@ def welcome():
 def register(user: UserRegister, conn=Depends(get_db)):
     """Register a new user."""
     try:
-        register_user(conn, user)
+        return register_user(conn, user)
     except ValueError as e:
         raise HTTPException(status_code=409, detail=str(e))
-    # remove duplicated Useroutput return
+    # remove duplicated User output return
 
 
 @router.post("/login/", dependencies=[Depends(login_limit)])
