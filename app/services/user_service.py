@@ -32,7 +32,7 @@ def list_users_service(conn: Connection, user: UserInDB):
     """Return all usernames if the requesting user is an admin."""
     if user.role != "admin":
         raise PermissionError("Only admins can list users")
-    list_users_db(conn)
+    return list_users_db(conn)
 
 
 def update_service(conn: Connection, user: UserInDB, user_name: str, role: str):
