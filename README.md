@@ -131,7 +131,7 @@ Content-Type: application/json
 The response contains a JWT access token
 ```json
 {
-"access_token": "<JWT_TOKEN>"
+"access_token": "<JWT_TOKEN>",
 "token_type": "bearer"
 }
 ```

@@ -1,6 +1,7 @@
 """ Here JWT Creation and verification forLow level Authentication"""
 import os
 from datetime import timedelta, datetime, timezone
+from pathlib import Path
 from typing import Annotated
 
 import jwt
@@ -13,10 +14,11 @@ from app.db.database import get_user_by_username, get_db
 from app.models.tokens import TokenData
 from app.models.users import UserInDB
 
+BASE_DIR = Path(__file__).resolve().parents[2]
 #Load variables for the JWT
-load_dotenv("var.env")
-key = os.getenv("JWT_KEY")
-algorithm = os.getenv("JWT_ALG")
+load_dotenv(BASE_DIR / "var.env")
+JWT_KEY = os.getenv("JWT_KEY")
+JWT_ALG = os.getenv("JWT_ALG")
 
 #Defining the Scheme tha we will be using ot authenticate
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -24,13 +26,16 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     """Create a signed JWT with an expiration time."""
+    if not JWT_ALG or not JWT_KEY:
+        raise RuntimeError("JWT variables not configured")
+
     to_encode = data.copy()
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=5)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, key, algorithm=algorithm)
+    encoded_jwt = jwt.encode(to_encode, JWT_KEY, algorithm=JWT_ALG)
     return encoded_jwt
 
 
@@ -42,7 +47,7 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], conn=Depends
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, key, algorithms=[algorithm])
+        payload = jwt.decode(token, JWT_KEY, algorithms=[JWT_ALG])
         username = payload.get("sub")
         if username is None:
             raise credentials_exception
