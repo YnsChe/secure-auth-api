@@ -1,7 +1,8 @@
 """ Basic test for Tokens"""
 
-def test_valid_token(client, register_user):
+def test_valid_token(client, register_user, reset_rate_limit):
     login = client.post("/login/", json=register_user)
+    print("login.json", login.json())
     token = login.json()["access_token"]
 
     resp = client.get("/user/me", headers={"Authorization": f"Bearer {token}"})
