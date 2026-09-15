@@ -38,7 +38,7 @@ def login(user: UserLogin, conn=Depends(get_db)):
     return {"access_token": token, "token_type": "bearer"}
 
 
-@router.post("/token", dependencies=[Depends(login_limit)])
+@router.post("/token/", dependencies=[Depends(login_limit)])
 def oauth2_login(form_data: OAuth2PasswordRequestForm = Depends(), conn=Depends(get_db)):
     """Login using OAuth2 Form"""
     user = UserLogin(username=form_data.username, password=form_data.password)
