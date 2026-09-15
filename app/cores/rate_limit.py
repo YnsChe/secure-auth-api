@@ -1,14 +1,12 @@
 """ Defining different rate limiting types for routes"""
 
-from pyrate_limiter import Duration, Limiter, Rate
-from fastapi_limiter.depends import RateLimiter
+#from pyrate_limiter import Duration, Limiter, Rate
+#from fastapi_limiter.depends import RateLimiter
 from fastapi import Request, HTTPException, status
 
 from threading import Lock
 from time import monotonic
 
-login_limiter = Limiter(Rate(3, Duration.MINUTE))
-LOGIN_RATE_LIMIT = RateLimiter(login_limiter)
 
 class RateLimiter:
     def __init__(self, max_requests: int, window_seconds: int):
