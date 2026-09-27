@@ -58,10 +58,10 @@ def test_oauth2_wrong_credentials_login(reset_rate_limit):
     assert resp.status_code == 401
 
 #Rate limiter test
-def test_login_rate_limit(registered_user, reset_rate_limit):
+def test_login_rate_limit(reset_rate_limit, register_user):
     with TestClient(app) as client:
         for _ in range(3):
-            response = client.post("/login/", json=registered_user)
+            response = client.post("/login/", json=register_user)
             assert response.status_code == 200
-        response = client.post("/login/", json=registered_user)
+        response = client.post("/login/", json=register_user)
         assert response.status_code == 429
