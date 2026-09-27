@@ -1,21 +1,18 @@
-from fastapi.testclient import TestClient
-from app.main import app
+""" Basic test for Tokens"""
 
-def test_valid_token(register_user):
-    with TestClient(app) as client:
-        login = client.post("/login", json=register_user)
-        token = login.json()["access_token"]
-        response = client.get("/user/me", headers={"Authorization": f"Bearer {token}"})
+def test_valid_token(client, register_user, reset_rate_limit):
+    login = client.post("/login/", json=register_user)
+    print("login.json", login.json())
+    token = login.json()["access_token"]
 
-        assert response.status_code == 200
+    resp = client.get("/user/me", headers={"Authorization": f"Bearer {token}"})
+    assert resp.status_code == 200
 
-def test_missing_token():
-    with TestClient(app) as client:
-        response = client.get("/user/me")
-    assert response.status_code == 401
+def test_missing_token(client):
+    resp = client.get("/user/me")
+    assert resp.status_code == 401
 
-def test_invalid_token():
-    with TestClient(app) as client:
-        response = client.get("/user/me", headers={"Authorization": "Bearer this-is-not-a-valid-token"})
-    assert response.status_code == 401
+def test_invalid_token(client):
+    resp = client.get("/user/me", headers={"Authorization": "Bearer this-is-not-a-valid-token"})
+    assert resp.status_code == 401
 
