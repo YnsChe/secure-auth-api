@@ -21,8 +21,8 @@ class UserRegister(BaseModel):
 
 
 class UserLogin(BaseModel):
-    username: str
-    password: str
+    username: Username
+    password: Password
 
 
 class UserInDB(BaseModel):
