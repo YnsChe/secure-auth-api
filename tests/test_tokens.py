@@ -16,6 +16,6 @@ def test_missing_token():
 
 def test_invalid_token():
     with TestClient(app) as client:
-        response = client.get("/user/me", headers={"Authorization:": "Bearer this-is-not-a-valid-token"})
+        response = client.get("/user/me", headers={"Authorization": "Bearer this-is-not-a-valid-token"})
     assert response.status_code == 401
 
