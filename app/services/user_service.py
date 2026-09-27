@@ -23,7 +23,7 @@ def login_user(conn: Connection, user: UserLogin):
 def delete_service(conn: Connection, user: UserInDB, user_name):
     """Delete a user if the requesting user is an admin."""
     if user.role != "admin":
-        raise PermissionError("Only admins can delete users")
+        raise PermissionError("Access denied")
     delete_user_db(conn, user_name)
 
 
@@ -31,12 +31,12 @@ def delete_service(conn: Connection, user: UserInDB, user_name):
 def list_users_service(conn: Connection, user: UserInDB):
     """Return all usernames if the requesting user is an admin."""
     if user.role != "admin":
-        raise PermissionError("Only admins can list users")
+        raise PermissionError("Access denied")
     return list_users_db(conn)
 
 
 def update_service(conn: Connection, user: UserInDB, user_name: str, role: str):
     """Update a user's role if the requesting user is an admin."""
     if user.role != "admin":
-        raise PermissionError("Only admins can update data")
+        raise PermissionError("Access denied")
     update_user_db(conn, user_name, role)
