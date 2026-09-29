@@ -28,6 +28,9 @@ jobs:
 
     # Run Tests
     - name: Run Tests
+      env:
+        JWT_KEY: "secret-dummy-key-for-the-github-actions-only"
+        JWT_ALG: "HS256"
       run: |
        pytest
            
