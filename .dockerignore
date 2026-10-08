@@ -1,10 +1,12 @@
 __pycache__/
-+.py[cod]
+*.py[cod]
 .venv/
 venv/
 ENV/
+
 .env
 .env.*
+var.env
 
 .git/
 .gitignore
